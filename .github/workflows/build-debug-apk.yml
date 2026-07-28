@@ -55,6 +55,21 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x gradlew
 
+      - name: Prepare custom serialization runtime
+        shell: bash
+        run: |
+          ./gradlew :app:dependencies --configuration debugRuntimeClasspath
+          serialization_jar=$(find "$HOME/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlinx/kotlinx-serialization-core-jvm" \
+            -type f -name 'kotlinx-serialization-core-jvm-*.jar' -print -quit)
+
+          if [[ -z "$serialization_jar" ]]; then
+            echo "kotlinx-serialization-core-jvm was not found in the Gradle cache" >&2
+            exit 1
+          fi
+
+          zip -d "$serialization_jar" \
+            kotlinx/serialization/internal/PluginGeneratedSerialDescriptor.class
+
       - name: Build debug APK
         run: ./gradlew assembleDebug --stacktrace
 
