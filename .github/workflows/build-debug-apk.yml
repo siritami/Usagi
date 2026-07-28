@@ -69,8 +69,17 @@ jobs:
 
           mkdir -p build/ci-dependencies
           cp "$serialization_jar" build/ci-dependencies/kotlinx-serialization-core-jvm.jar
-          zip -d build/ci-dependencies/kotlinx-serialization-core-jvm.jar \
-            kotlinx/serialization/internal/PluginGeneratedSerialDescriptor.class
+          if unzip -l build/ci-dependencies/kotlinx-serialization-core-jvm.jar | \
+            grep -q 'kotlinx/serialization/internal/PluginGeneratedSerialDescriptor.class'; then
+            zip -d build/ci-dependencies/kotlinx-serialization-core-jvm.jar \
+              kotlinx/serialization/internal/PluginGeneratedSerialDescriptor.class
+          fi
+
+          if unzip -l build/ci-dependencies/kotlinx-serialization-core-jvm.jar | \
+            grep -q 'kotlinx/serialization/internal/PluginGeneratedSerialDescriptor.class'; then
+            echo "Failed to remove PluginGeneratedSerialDescriptor from serialization core" >&2
+            exit 1
+          fi
 
       - name: Build debug APK
         run: >-
