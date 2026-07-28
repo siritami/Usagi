@@ -67,11 +67,15 @@ jobs:
             exit 1
           fi
 
-          zip -d "$serialization_jar" \
+          mkdir -p build/ci-dependencies
+          cp "$serialization_jar" build/ci-dependencies/kotlinx-serialization-core-jvm.jar
+          zip -d build/ci-dependencies/kotlinx-serialization-core-jvm.jar \
             kotlinx/serialization/internal/PluginGeneratedSerialDescriptor.class
 
       - name: Build debug APK
-        run: ./gradlew assembleDebug --stacktrace
+        run: >-
+          ./gradlew assembleDebug --stacktrace
+          -PcustomSerializationCoreJar="$GITHUB_WORKSPACE/build/ci-dependencies/kotlinx-serialization-core-jvm.jar"
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
