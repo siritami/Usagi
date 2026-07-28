@@ -22,6 +22,7 @@ import org.draken.usagi.core.os.AppShortcutManager
 import org.draken.usagi.core.ui.dialog.buildAlertDialog
 import org.draken.usagi.core.util.ext.isHttpUrl
 import org.draken.usagi.details.ui.DetailsClassicActivity
+import org.draken.usagi.details.ui.model.ChapterSortMode
 
 class DetailsMenuProvider(
 	private val activity: FragmentActivity,
@@ -68,6 +69,14 @@ class DetailsMenuProvider(
 		menu.findItem(R.id.action_scrobbling)?.isVisible = viewModel.isScrobblingAvailable
 		menu.findItem(R.id.action_online)?.isVisible = viewModel.remoteManga.value != null
 		menu.findItem(R.id.action_stats)?.isVisible = viewModel.isStatsAvailable.value
+		when (viewModel.chapterSortMode.value) {
+			ChapterSortMode.SOURCE -> menu.findItem(R.id.action_chapter_sort_source)?.isChecked = true
+			ChapterSortMode.NUMBER -> menu.findItem(R.id.action_chapter_sort_number)?.isChecked = true
+			ChapterSortMode.UPLOAD_DATE -> menu.findItem(R.id.action_chapter_sort_upload_date)?.isChecked = true
+			ChapterSortMode.TITLE -> menu.findItem(R.id.action_chapter_sort_title)?.isChecked = true
+		}
+		menu.findItem(R.id.action_chapter_sort_ascending)?.isChecked = !viewModel.isChaptersReversed.value
+		menu.findItem(R.id.action_chapter_sort_descending)?.isChecked = viewModel.isChaptersReversed.value
 	}
 
 	override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -88,6 +97,36 @@ class DetailsMenuProvider(
 
 			R.id.action_save -> {
 				router.showDownloadDialog(manga, snackbarHost)
+			}
+
+			R.id.action_chapter_sort_ascending -> {
+				viewModel.setChaptersReversed(false)
+				menuItem.isChecked = true
+			}
+
+			R.id.action_chapter_sort_descending -> {
+				viewModel.setChaptersReversed(true)
+				menuItem.isChecked = true
+			}
+
+			R.id.action_chapter_sort_source -> {
+				viewModel.setChapterSortMode(ChapterSortMode.SOURCE)
+				menuItem.isChecked = true
+			}
+
+			R.id.action_chapter_sort_number -> {
+				viewModel.setChapterSortMode(ChapterSortMode.NUMBER)
+				menuItem.isChecked = true
+			}
+
+			R.id.action_chapter_sort_upload_date -> {
+				viewModel.setChapterSortMode(ChapterSortMode.UPLOAD_DATE)
+				menuItem.isChecked = true
+			}
+
+			R.id.action_chapter_sort_title -> {
+				viewModel.setChapterSortMode(ChapterSortMode.TITLE)
+				menuItem.isChecked = true
 			}
 
 			R.id.action_browser -> {

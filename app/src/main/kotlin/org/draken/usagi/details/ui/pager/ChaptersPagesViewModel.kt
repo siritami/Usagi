@@ -39,6 +39,7 @@ import org.draken.usagi.details.ui.DetailsClassicActivity
 import org.draken.usagi.details.ui.DetailsViewModel
 import org.draken.usagi.details.ui.mapChapters
 import org.draken.usagi.details.ui.model.ChapterListItem
+import org.draken.usagi.details.ui.model.ChapterSortMode
 import org.draken.usagi.download.ui.worker.DownloadTask
 import org.draken.usagi.download.ui.worker.DownloadWorker
 import org.draken.usagi.history.data.HistoryRepository
@@ -93,6 +94,13 @@ abstract class ChaptersPagesViewModel(
 			scope = viewModelScope + Dispatchers.Default,
 			key = AppSettings.KEY_REVERSE_CHAPTERS,
 			valueProducer = { isChaptersReverse },
+		)
+
+	val chapterSortMode =
+		settings.observeAsStateFlow(
+			scope = viewModelScope + Dispatchers.Default,
+			key = AppSettings.KEY_CHAPTER_SORT_MODE,
+			valueProducer = { chapterSortMode },
 		)
 
 	val isChaptersInGridView =
@@ -160,10 +168,11 @@ abstract class ChaptersPagesViewModel(
 						isDownloadedOnly = downloadedOnly,
 					).orEmpty()
 			},
+			chapterSortMode,
 			isChaptersReversed,
 			chaptersQuery,
-		) { list, reversed, query ->
-			(if (reversed) list.asReversed() else list).filterSearch(query)
+		) { list, sortMode, reversed, query ->
+			list.sortChapters(sortMode, reversed).filterSearch(query)
 		}.stateIn(viewModelScope + Dispatchers.Default, SharingStarted.Eagerly, emptyList())
 
 	val quickFilter =
@@ -197,6 +206,10 @@ abstract class ChaptersPagesViewModel(
 
 	fun setChaptersReversed(newValue: Boolean) {
 		settings.isChaptersReverse = newValue
+	}
+
+	fun setChapterSortMode(newValue: ChapterSortMode) {
+		settings.chapterSortMode = newValue
 	}
 
 	fun setChaptersInGridView(newValue: Boolean) {
@@ -271,6 +284,22 @@ abstract class ChaptersPagesViewModel(
 			return this
 		}
 		return filter { it.contains(query) }
+	}
+
+	private fun List<ChapterListItem>.sortChapters(
+		mode: ChapterSortMode,
+		reversed: Boolean,
+	): List<ChapterListItem> {
+		val sourceOrder = withIndex().associate { it.value.chapter.id to it.index }
+		val comparator =
+			when (mode) {
+				ChapterSortMode.SOURCE -> compareBy<ChapterListItem> { sourceOrder.getValue(it.chapter.id) }
+				ChapterSortMode.NUMBER -> compareBy<ChapterListItem> { it.chapter.number }
+				ChapterSortMode.UPLOAD_DATE -> compareBy<ChapterListItem> { it.chapter.uploadDate }
+				ChapterSortMode.TITLE -> compareBy(String.CASE_INSENSITIVE_ORDER) { it.chapter.title.orEmpty() }
+			}.thenBy { sourceOrder.getValue(it.chapter.id) }
+		val sorted = sortedWith(comparator)
+		return if (reversed) sorted.asReversed() else sorted
 	}
 
 	private suspend fun onDownloadComplete(downloadedManga: LocalManga?) {

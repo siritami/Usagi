@@ -46,6 +46,10 @@
     <string name="newest">Newest</string>
     <string name="by_rating">Rating</string>
     <string name="sort_order">Sorting order</string>
+    <string name="chapter_sort_source">Source order</string>
+    <string name="chapter_sort_number">Chapter number</string>
+    <string name="chapter_sort_upload_date">Upload date</string>
+    <string name="chapter_sort_title">Chapter title</string>
     <string name="filter">Filter</string>
     <string name="saved_filters">Saved filters</string>
     <string name="theme">Theme</string>

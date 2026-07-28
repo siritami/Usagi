@@ -31,6 +31,7 @@ import org.draken.usagi.core.util.ext.putAll
 import org.draken.usagi.core.util.ext.putEnumValue
 import org.draken.usagi.core.util.ext.takeIfReadable
 import org.draken.usagi.core.util.ext.toUriOrNull
+import org.draken.usagi.details.ui.model.ChapterSortMode
 import org.draken.usagi.explore.data.SourcesSortOrder
 import org.draken.usagi.list.domain.ListSortOrder
 import org.draken.usagi.reader.domain.ReaderColorFilter
@@ -284,6 +285,10 @@ class AppSettings
 		var isChaptersReverse: Boolean
 			get() = prefs.getBoolean(KEY_REVERSE_CHAPTERS, false)
 			set(value) = prefs.edit { putBoolean(KEY_REVERSE_CHAPTERS, value) }
+
+		var chapterSortMode: ChapterSortMode
+			get() = prefs.getEnumValue(KEY_CHAPTER_SORT_MODE, ChapterSortMode.SOURCE)
+			set(value) = prefs.edit { putEnumValue(KEY_CHAPTER_SORT_MODE, value) }
 
 		var isChaptersGridView: Boolean
 			get() = prefs.getBoolean(KEY_GRID_VIEW_CHAPTERS, false)
@@ -831,6 +836,7 @@ class AppSettings
 			const val KEY_PROGRESS_INDICATORS = "progress_indicators"
 			const val KEY_DETAILS_UI = "details_ui"
 			const val KEY_REVERSE_CHAPTERS = "reverse_chapters"
+			const val KEY_CHAPTER_SORT_MODE = "chapter_sort_mode"
 			const val KEY_GRID_VIEW_CHAPTERS = "grid_view_chapters"
 			const val KEY_INCOGNITO_NSFW = "incognito_nsfw"
 			const val KEY_PAGES_NUMBERS = "pages_numbers"
