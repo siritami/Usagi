@@ -2,6 +2,7 @@ package org.draken.usagi.filter.data
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.SetSerializer
+import kotlinx.serialization.builtins.nullable
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
@@ -52,11 +53,11 @@ object MangaListFilterSerializer : KSerializer<MangaListFilter> {
 		encoder: Encoder,
 		value: MangaListFilter,
 	) = encoder.encodeStructure(descriptor) {
-		encodeNullableSerializableElement(descriptor, 0, String.serializer(), value.query)
+		encodeNullableSerializableElement(descriptor, 0, String.serializer().nullable, value.query)
 		encodeSerializableElement(descriptor, 1, SetSerializer(MangaTagSerializer), value.tags)
 		encodeSerializableElement(descriptor, 2, SetSerializer(MangaTagSerializer), value.tagsExclude)
-		encodeNullableSerializableElement(descriptor, 3, String.serializer(), value.locale?.toLanguageTag())
-		encodeNullableSerializableElement(descriptor, 4, String.serializer(), value.originalLocale?.toLanguageTag())
+		encodeNullableSerializableElement(descriptor, 3, String.serializer().nullable, value.locale?.toLanguageTag())
+		encodeNullableSerializableElement(descriptor, 4, String.serializer().nullable, value.originalLocale?.toLanguageTag())
 		encodeSerializableElement(descriptor, 5, SetSerializer(serializer()), value.states)
 		encodeSerializableElement(descriptor, 6, SetSerializer(serializer()), value.contentRating)
 		encodeSerializableElement(descriptor, 7, SetSerializer(serializer()), value.types)
@@ -64,7 +65,7 @@ object MangaListFilterSerializer : KSerializer<MangaListFilter> {
 		encodeIntElement(descriptor, 9, value.year)
 		encodeIntElement(descriptor, 10, value.yearFrom)
 		encodeIntElement(descriptor, 11, value.yearTo)
-		encodeNullableSerializableElement(descriptor, 12, String.serializer(), value.author)
+		encodeNullableSerializableElement(descriptor, 12, String.serializer().nullable, value.author)
 	}
 
 	override fun deserialize(decoder: Decoder): MangaListFilter =
@@ -86,7 +87,7 @@ object MangaListFilterSerializer : KSerializer<MangaListFilter> {
 			while (true) {
 				when (decodeElementIndex(descriptor)) {
 					0 -> {
-						query = decodeNullableSerializableElement(descriptor, 0, serializer<String>())
+						query = decodeNullableSerializableElement(descriptor, 0, String.serializer().nullable)
 					}
 
 					1 -> {
@@ -98,12 +99,12 @@ object MangaListFilterSerializer : KSerializer<MangaListFilter> {
 					}
 
 					3 -> {
-						locale = decodeNullableSerializableElement(descriptor, 3, serializer<String>())?.toLocaleOrNull()
+						locale = decodeNullableSerializableElement(descriptor, 3, String.serializer().nullable)?.toLocaleOrNull()
 					}
 
 					4 -> {
 						originalLocale =
-							decodeNullableSerializableElement(descriptor, 4, serializer<String>())?.toLocaleOrNull()
+							decodeNullableSerializableElement(descriptor, 4, String.serializer().nullable)?.toLocaleOrNull()
 					}
 
 					5 -> {
@@ -135,7 +136,7 @@ object MangaListFilterSerializer : KSerializer<MangaListFilter> {
 					}
 
 					12 -> {
-						author = decodeNullableSerializableElement(descriptor, 12, serializer<String>())
+						author = decodeNullableSerializableElement(descriptor, 12, String.serializer().nullable)
 					}
 
 					CompositeDecoder.DECODE_DONE -> {
