@@ -129,7 +129,9 @@ android {
 def customSerializationCoreJar = providers.gradleProperty("customSerializationCoreJar").orNull
 if (customSerializationCoreJar != null) {
 	configurations.configureEach {
-		exclude group: "org.jetbrains.kotlinx", module: "kotlinx-serialization-core-jvm"
+		if (!name.toLowerCase().startsWith("ksp")) {
+			exclude group: "org.jetbrains.kotlinx", module: "kotlinx-serialization-core-jvm"
+		}
 	}
 }
 
